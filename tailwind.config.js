@@ -16,12 +16,8 @@ module.exports = {
         'tablet': { 'max': '999px' },
         // 'laptop': { 'min': '950px', 'max': '1130px' },
         'desktop': { 'min': '1000px' },
-      },
-      height: {
-        't': 'calc( 100vh - 190px )',
-        'p': 'calc( 100vh - 120px )'
       }
-    },
+    }
   },
   variants: {
     extend: {},

@@ -3,6 +3,7 @@ import { ref, onMounted, reactive, computed } from 'vue'
 import 'vue3-carousel/dist/carousel.css'
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel'
 import { getAssetsFile } from '@/utils/commonUse'
+import gridCarousel from '@/components/gridCarousel.vue'
 components: {
   Carousel,
   Slide,
@@ -58,19 +59,63 @@ const goOutWeb = (index) => {
 const email = ref('')
 const showBigPhoto = ref(false)
 const p = ref('')
+const nowIndex = ref(0)
 const nowPic = computed(() => {
-  return getAssetsFile(`${p.value}.png`)
+  return getAssetsFile(`m${nowIndex.value}.png`)
 })
 const show = (type, idx) => {
   showBigPhoto.value = true
+  nowIndex.value = idx
   p.value = type + idx.toString()
 }
+const breakpoints = {
+  // 700px and up
+  700: {
+    itemsToShow: 3.5,
+    snapAlign: 'center',
+  },
+  // 1024 and up
+  1024: {
+    itemsToShow: 5,
+    snapAlign: 'start',
+  },
+}
+const picList = reactive([
+  { imgName: 'c1', w: 197, h: 198 },
+  { imgName: 'c2', w: 197, h: 198 },
+  { imgName: 'c3', w: 400, h: 400 },
+  { imgName: 'c4', w: 299, h: 299 },
+  { imgName: 'c5', w: 299, h: 299 },
+  { imgName: 'c6', w: 603, h: 603 },
+  { imgName: 'c7', w: 452, h: 603 }
+])
+// const picList = reactive(['c1', 'c2', 'c3', 'c4', 'c5', 'c6'])
+const gridArea = `
+  "c1 c1 c1 c2 c2 c2 c4 c4 c4 c4 c6 c6 c6 c6 c6 c7 c7 c7 c7"
+  "c1 c1 c1 c2 c2 c2 c4 c4 c4 c4 c6 c6 c6 c6 c6 c7 c7 c7 c7"
+  "c1 c1 c1 c2 c2 c2 c4 c4 c4 c4 c6 c6 c6 c6 c6 c7 c7 c7 c7"
+  "c3 c3 c3 c3 c3 c3 c4 c4 c4 c4 c6 c6 c6 c6 c6 c7 c7 c7 c7"
+  "c3 c3 c3 c3 c3 c3 c5 c5 c5 c5 c6 c6 c6 c6 c6 c7 c7 c7 c7"
+  "c3 c3 c3 c3 c3 c3 c5 c5 c5 c5 c6 c6 c6 c6 c6 c7 c7 c7 c7"
+  "c3 c3 c3 c3 c3 c3 c5 c5 c5 c5 c6 c6 c6 c6 c6 c7 c7 c7 c7"
+  "c3 c3 c3 c3 c3 c3 c5 c5 c5 c5 c6 c6 c6 c6 c6 c7 c7 c7 c7"
+
+`
+const openPic = (idx) => {
+  console.log(idx)
+}
+const changePicIndex = (type) => {
+  type == 'back' ? nowIndex.value -= 1 : nowIndex.value += 1
+}
 </script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Edu+TAS+Beginner:wght@600&family=Hind:wght@700&family=Nunito+Sans:opsz,wght@6..12,700&family=Rubik+Bubbles&display=swap');
+</style>
 <template>
   <div class="w-screen bg-[#FFD230] flex flex-col pt-[100px] items-center justify-end">
     <div class="flex flex-col items-center titleC">
       <div class="font-bold text-[64px] flex flex-col items-center titleCText">
-        <span>NEW YUE WONG RESTAURANT</span>
+        <span data-aos="zoom-in">NEW YUE WONG RESTAURANT</span>
         <span>裕旺大饭店</span>
       </div>
       <div class="flex gap-[46px] mt-[30px] mb-[30px] titleCOption">
@@ -83,38 +128,44 @@ const show = (type, idx) => {
   </div>
   <div class="flex w-screen justify-center pt-[154px] pb-[111px] about">
     <div class="flex w-[70%] gap-[80px] justify-center aboutC">
-      <img src="@/assets/img/img2.png" alt="img">
+      <img src="@/assets/img/img2.png" alt="img" data-aos="fade-up">
       <div class="w-[40%] aboutCArea">
-        <div class="font-bold text-[32px] mb-[30px] gap-3 flex aboutCTitle">
+        <div class="font-bold text-[32px] mb-[30px] gap-3 flex aboutCTitle" data-aos="fade-down-left">
           <span>ABOUT</span>
           <span class="text-[#FFD230]">NYW</span>
         </div>
         <div class="text-[20px] leading-loose aboutCText">
           Welcome to New Yue Wong in NYC's Chinatown since 2011! Try our famous Peking Duck—crispy, succulent, and full of authentic flavor. Our spot blends tradition with innovation for a memorable dining experience that captures the spirit of Chinatown in every delicious bite!
         </div>
-    </div>
+      </div>
     </div>
   </div>
-  <div class="flex w-screen justify-center pt-[154px] pb-[111px] explore">
-    <div class="flex w-[70%] gap-[80px] justify-center items-center exploreC">
-      <div>
-        <img src="@/assets/img/text1.png" alt="img">
-        <div class="bg-[#FFD230] text-[24px] font-bold py-[13px] px-[20px] text-center mt-[20px]">See More</div>
-      </div>
-      <div class="w-[60%] bg-[#FFD230] p-[49px]">
-        <Carousel :items-to-show="2.5" :wrap-around="true">
-          <Slide v-for="slide in 6" :key="slide" @click="show('c', slide)">
-            <div class="carousel__item">
-              <img :src="getAssetsFile(`c${slide}.png`)" class="w-[200px]">
-            </div>
-          </Slide>
-          <template #addons>
-            <Navigation />
-          </template>
-        </Carousel>
-      </div>
+  <!-- Menu-->
+  <div class="w-screen bg-[#FFD230] py-10 menuBanner flex flex-col items-center h-[600px]">
+    MENU
+    <div class="max-w-[1200px]">
+      <Carousel :snapAlign="'center'" :breakpoints="breakpoints">
+        <Slide v-for="slide in 11" :key="slide" @click="show('m', slide)">
+          <div class="carousel__item">
+            <!-- <img :src="getAssetsFile(`m${slide}.png`)" class="w-[200px]"> -->
+            <img :src="getAssetsFile(`m${slide}.png`)">
+          </div>
+        </Slide>
+        <template #addons>
+          <Navigation />
+        </template>
+      </Carousel>
     </div>
-    <div class="exploreCShow">
+  </div>
+  <!-- Food -->
+  <div class="flex w-screen justify-center pt-[154px] pb-[111px]">
+    <div class="w-[1200px] flex items-center gap-4">
+      <div class="exploreTitle whitespace-nowrap">
+        Explore<br/>Our Food
+      </div>
+      <gridCarousel :picList="picList" :gridArea="gridArea" :ifOverflowScroll="true" @openPic="openPic"/>
+    </div>
+    <!-- <div class="exploreCShow">
       <img src="../assets/img/text3.png" alt="">
       <div class="exploreCImgList">
         <div class="list1">
@@ -124,43 +175,18 @@ const show = (type, idx) => {
           <img v-for="item in 3" :key="item" :src="getAssetsFile(`menu/right${item}.jpg`)" alt="">
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
-  <div class="flex w-screen justify-center pt-[154px] pb-[111px] menu">
-    <div class="flex w-[70%] gap-[80px] justify-center items-center menuC">
-      <div class="bg-[#FFD230] p-[30px] w-[60%]">
-        <Carousel :items-to-show="2.5" :wrap-around="true">
-          <Slide v-for="slide in 11" :key="slide" @click="show('m', slide)">
-            <div class="carousel__item">
-              <img :src="getAssetsFile(`m${slide}.png`)" class="w-[200px]">
-            </div>
-          </Slide>
-          <template #addons>
-            <Navigation />
-          </template>
-        </Carousel>
-      </div>
-      <div>
-        <img src="@/assets/img/text2.png" alt="img">
-      </div>
-    </div>
-    <div class="menuCShow">
-      <img class="title" src="../assets/img/text4.png" alt="">
-      <img src="../assets/img/menu/menu1.jpg" alt="">
-    </div>
-  </div>
-  <div class="bg-[#FFD230] w-screen h-[320px] justify-center items-center flex gap-[80px] mail">
-    <div class="flex flex-col items-center">
-      <span>Stay savory!</span>
-      <span>Subscribe for exclusive updates.</span>
-    </div>
-    <div class="flex input">
+  <div class="bg-[#FFD230] w-screen h-[320px] justify-center items-center flex flex-col mail">
+    <span class="emailTitle">Stay savory!</span>
+    <span class="emailTitle content">Join our email list and get access to specials deals exclusive to our subscribers.</span>
+    <div class="flex input px-[10px] py-[10px] bg-white rounded-2xl mt-[20px]">
       <el-input
         v-model="email"
-        placeholder="Email"
+        placeholder="enter your email address"
       />
-      <div class="send">
-        <img src="@/assets/img/arrow.png" alt="arrow">
+      <div class="sendBtn bg-slate-600 text-white px-3 py-2 flex items-center justify-center rounded-xl cursor-pointer">
+        <span>Subscribe</span>
       </div>
     </div>
   </div>
@@ -234,7 +260,9 @@ const show = (type, idx) => {
   </div>
   <div class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center pic" v-if="showBigPhoto">
     <div class="absolute right-10 top-5 text-xl font-semibold z-20 text-white cursor-pointer" @click="showBigPhoto = false">CLOSE</div>
+    <img src="@/assets/img/ca.png" class="rotate-180 w-[50px] absolute top-[50%] left-[20%] translate-y-[-50%]" v-if="nowIndex > 1" @click="changePicIndex('back')">
     <img :src="nowPic" class="w-[70vw] h-[80vh] object-contain">
+    <img src="@/assets/img/ca.png" class="w-[50px] absolute top-[50%] right-[20%] translate-y-[-50%]" v-if="nowIndex < 11" @click="changePicIndex('go')">
   </div>
 </template>
 <style lang="scss" scoped>
@@ -243,8 +271,8 @@ const show = (type, idx) => {
   .el-input__wrapper {
     border-radius: 0px;
     box-shadow: none;
-    background-color: transparent;
-    border: 2px solid black;
+    background-color: white;
+    border: none;
   }
 }
 .send {
@@ -469,6 +497,25 @@ const show = (type, idx) => {
       text-align: center;
       font-size: 9px;
     }
+  }
+}
+.menuBanner {
+  font-family: 'Rubik Bubbles';
+  color: white;
+  font-size: 60px;
+}
+.exploreTitle {
+  font-family: 'Rubik Bubbles';
+  color: #FFD230;
+  font-size: 60px;
+}
+.emailTitle {
+  font-family: 'Rubik Bubbles';
+  color: black;
+  font-size: 60px;
+  &.content {
+    font-family: 'Noto Sans';
+    font-size: 20px;
   }
 }
 </style>
